@@ -29,6 +29,19 @@ def sortear_monstro(jogador_lvl):
     quimera = ["Quimera", 320, 64, 320]
     dragao = ["Dragão", 1000, 100, 1000]
 
+    # Retornando monstros de acordo com lvl do jogador
+
+    if jogador_lvl <= 5:
+        monstro_sorteado = random.choice([slime, goblin])
+    elif jogador_lvl <= 15:
+        monstro_sorteado = random.choice([goblin, troll, orc])
+    else:
+        monstro_sorteado = random.choice([mumia, quimera, dragao])
+
+    return monstro_sorteado
+
 
 mostrar_titulo()
 nome, hp, lvl, forca, exp, inventario, status = iniciar_jogo()
+monstro_sorteado = sortear_monstro(1)
+print(f"Monstro sorteado: {monstro_sorteado}")
