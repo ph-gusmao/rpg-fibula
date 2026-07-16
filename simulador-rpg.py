@@ -30,7 +30,6 @@ def sortear_monstro(jogador_lvl):
     dragao = ["Dragão", 1000, 100, 1000]
 
     # Retornando monstros de acordo com lvl do jogador
-
     if jogador_lvl <= 5:
         monstro_sorteado = random.choice([slime, goblin])
     elif jogador_lvl <= 15:
@@ -41,7 +40,14 @@ def sortear_monstro(jogador_lvl):
     return monstro_sorteado
 
 
+def game_over():
+    print("GAME OVER! Você morreu.")
+    print("Obrigado por jogar.")
+    exit(0)
+
+
 mostrar_titulo()
 nome, hp, lvl, forca, exp, inventario, status = iniciar_jogo()
 monstro_sorteado = sortear_monstro(1)
 print(f"Monstro sorteado: {monstro_sorteado}")
+game_over()
