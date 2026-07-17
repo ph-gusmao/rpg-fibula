@@ -176,8 +176,25 @@ def obter_pocao():
         return None
 
 
-mostrar_titulo()
-nome, lvl, exp = iniciar_jogo()
-raca, hp, forca = escolher_raca()
-monstro_sorteado = sortear_monstro(lvl)
-print(f"{monstro_sorteado}")
+def usar_item(jogador_inventario, jogador_hp):
+    if not jogador_inventario:
+        print("Seu inventário está vazio.")
+    else:
+        print("Itens no inventário:")
+        for index, item in enumerate(jogador_inventario):
+            print(f"{index + 1}. {item}")
+        opcao_item = int(input("Escolha o item(ou 0 para cancelar): "))
+        if opcao_item == 0:
+            print("\nVocê cancelou o uso do item.")
+
+
+# jogo executa aqui
+# mostrar_titulo()
+# nome, lvl, exp = iniciar_jogo()
+# raca, hp, forca = escolher_raca()
+# monstro_sorteado = sortear_monstro(lvl)
+# print(f"{monstro_sorteado}")
+
+lista = ["Slime", "Goblin", "Troll", "Orc", "Múmia", "Quimera", "Dragão"]
+for index, item in enumerate(lista):
+    print(f"{index}: {item}")
