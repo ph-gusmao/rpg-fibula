@@ -6,7 +6,6 @@ weakness = {
     "Varyn": "Ataques de arco e flecha, particularmente por flechas venenosas",
     "Umbri": "Ataques corporais em geral, e ataques de magia elemental",
     "Chronari": "Ataques de magia, particularmente por magias sombrias",
-    "Auriano": "Ataques de magia sombria.",
 }
 
 racas = {
@@ -49,14 +48,6 @@ racas = {
         "description": "Chronoris são guardiões do tempo, mestres em magia elemental, especialmente em magias do tempo.",
         "special": "Chronoris podem manipular o tempo para obter vantagem em combate.",
         "weakness": weakness["Chronari"],
-    },
-    "Auriano": {
-        "id": 6,
-        "hp": 100,
-        "forca": 3,
-        "description": "Aurianos são mestres em tecnologia divina.",
-        "special": "Itens fabricados possuem qualidade superior.",
-        "weakness": weakness["Auriano"],
     },
 }
 
@@ -174,6 +165,15 @@ def calcular_lvl(jogador_lvl, jogador_exp, jogador_hp, jogador_forca, exp_monstr
             f"Parabéns! Você subiu de nível! Agora você é nível {jogador_lvl}, com {jogador_hp} de HP e {jogador_forca} de força."
         )
     return jogador_lvl, jogador_exp, jogador_hp, jogador_forca
+
+
+def obter_pocao():
+    chance = random.random()
+    if chance <= 0.4:
+        print("Você encontrou uma poção de cura!")
+        return True
+    else:
+        return None
 
 
 mostrar_titulo()
