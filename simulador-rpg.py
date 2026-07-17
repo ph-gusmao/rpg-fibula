@@ -168,8 +168,8 @@ def calcular_lvl(jogador_lvl, jogador_exp, jogador_hp, jogador_forca, exp_monstr
 
     if jogador_exp >= exp_necessaria:
         jogador_lvl += 1
-        jogador_hp += 10
-        jogador_forca += 1
+        jogador_hp += 100
+        jogador_forca *= 2
         print(
             f"Parabéns! Você subiu de nível! Agora você é nível {jogador_lvl}, com {jogador_hp} de HP e {jogador_forca} de força."
         )
