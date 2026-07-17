@@ -199,6 +199,16 @@ def usar_item(jogador_inventario, jogador_hp):
                 print("Item inválido.\n")
 
 
+def fugir(jogador_nome):
+    chance_fuga = random.random()
+    if chance_fuga <= 0.5:
+        print(f"{jogador_nome} conseguiu fugir do combate!")
+        return True
+    else:
+        print(f"{jogador_nome} não conseguiu fugir do combate!")
+        return False
+
+
 # jogo executa aqui
 # mostrar_titulo()
 # nome, lvl, exp = iniciar_jogo()
