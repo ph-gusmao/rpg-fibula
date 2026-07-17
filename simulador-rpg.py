@@ -60,14 +60,14 @@ def mostrar_titulo():
 
 def iniciar_jogo():
     nome = input("Digite o seu nome: ")
-    # hp = 100
+    hp = 100
     lvl = 1
-    # forca = 3
+    forca = 3
     exp = 0
-    # inventario = []
-    # status = True  # Vivo(True) ou morto(False)
+    inventario = []
+    status = True  # Vivo(True) ou morto(False)
 
-    return nome, lvl, exp
+    return nome, lvl, exp, inventario, status, hp, forca
 
 
 def escolher_raca():
@@ -210,12 +210,28 @@ def fugir(jogador_nome):
 
 
 # jogo executa aqui
-# mostrar_titulo()
-# nome, lvl, exp = iniciar_jogo()
-# raca, hp, forca = escolher_raca()
-# monstro_sorteado = sortear_monstro(lvl)
-# print(f"{monstro_sorteado}")
+mostrar_titulo()
+(
+    jogador_nome,
+    jogador_hp,
+    jogador_lvl,
+    jogador_forca,
+    jogador_exp,
+    jogador_inventario,
+    jogador_status,
+) = iniciar_jogo()
+print("\n")
 
-lista = ["Slime", "Goblin", "Troll", "Orc", "Múmia", "Quimera", "Dragão"]
-for index, item in enumerate(lista):
-    print(f"{index}: {item}")
+jogador_lutando = False
+while True:
+    if not jogador_lutando:  # Não estou enfrentando um monstro
+        monstro_nome, monstro_hp, monstro_forca, monstro_exp = sortear_monstro(
+            jogador_lvl
+        )
+        print(f"Um {monstro_nome} apareceu! (HP: {monstro_hp}, Força: {monstro_forca})")
+        jogador_lutando = True
+
+
+raca, hp, forca = escolher_raca()
+monstro_sorteado = sortear_monstro(lvl)
+print(f"{monstro_sorteado}")
