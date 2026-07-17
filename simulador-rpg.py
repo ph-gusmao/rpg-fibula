@@ -186,6 +186,17 @@ def usar_item(jogador_inventario, jogador_hp):
         opcao_item = int(input("Escolha o item(ou 0 para cancelar): "))
         if opcao_item == 0:
             print("\nVocê cancelou o uso do item.")
+        else:
+            item_escolhido = jogador_inventario[opcao_item - 1]
+            if item_escolhido == "Poção":
+                print("Você usou uma poção!")
+                jogador_hp += 20
+                if jogador_hp > 100:
+                    jogador_hp = 100
+                    print(f"Seu HP agora é {jogador_hp}.\n")
+                    jogador_inventario.pop(opcao_item - 1)
+            else:
+                print("Item inválido.\n")
 
 
 # jogo executa aqui
