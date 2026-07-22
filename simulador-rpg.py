@@ -1,296 +1,247 @@
 import random
 
-weakness = {
-    "humana": "Magia (elemental ou necromante)",
-    "sylvan": "Ataques corporais em geral, e ataque de magia necromante",
-    "Varyn": "Ataques de arco e flecha, particularmente por flechas venenosas",
-    "Umbri": "Ataques corporais em geral, e ataques de magia elemental",
-    "Chronari": "Ataques de magia, particularmente por magias sombrias",
-}
 
-racas = {
-    "Humano": {
-        "id": 1,
-        "hp": 100,
-        "forca": 3,
-        "description": "Humanos são versáteis e adaptáveis, aprendem rápido e evoluem qualquer habilidade.",
-        "special": "Quanto menor a vida, maior a força e defesa.",
-        "weakness": weakness["humana"],
-    },
-    "Sylvan": {
-        "id": 2,
-        "hp": 80,
-        "forca": 5,
-        "description": "Sylvans são habitantes da floresta, especialistas em arquearia e magia elemental. Possuem orelhas pontudas.",
-        "special": "Sylvans têm uma ligação com a natureza, curam mais, usam plantas para fazer poções e venenos e tem resistência a venenos",
-        "weakness": weakness["sylvan"],
-    },
-    "Varyns": {
-        "id": 3,
-        "hp": 120,
-        "forca": 2,
-        "description": "Varyns são mestres em combate corpo a corpo, capazes de lutar com lâminas de todos os tipos de material. Possuem escamas pelo corpo",
-        "special": "Varyns possuem mais força, resistência a fogo, e possuem um rugido que atordoa quem estiver por perto.",
-        "weakness": weakness["Varyn"],
-    },
-    "Umbri": {
-        "id": 4,
-        "hp": 90,
-        "forca": 4,
-        "description": "Umbri são guerreiros sombrios, dominam o combate corpo a corpo e possuem poderosas habilidades de magia sombria.",
-        "special": "Umbri são resistentes ao frio, podem ver espíritos, detectam passagens secretas e resistem a corrupção.",
-        "weakness": weakness["Umbri"],
-    },
-    "Chronari": {
-        "id": 5,
-        "hp": 110,
-        "forca": 3,
-        "description": "Chronoris são guardiões do tempo, mestres em magia elemental, especialmente em magias do tempo.",
-        "special": "Chronoris podem manipular o tempo para obter vantagem em combate.",
-        "weakness": weakness["Chronari"],
-    },
-}
-
-
+# Função para exibir o título de abertura
 def mostrar_titulo():
-    print("===================================")
-    print("      SIMULADOR DE RPG EM TEXTO    ")
-    print("===================================")
+    title = r"""
+                    //    \
+                   ((     ))
+               ===  \_v_//  ===
+ Art by          ====)_^_(====
+Roland Waylor    ===/ O O \===
+                 = | /_ _\ | =
+                =   \/_ _\/   =
+                     \_ _/
+                     (o_o)
+                      VwV
+    """
+    print(title)
+    print("Bem-vindo ao FIBULA RPG!")
 
 
-def iniciar_jogo():
-    nome = input("Digite o seu nome: ")
+# ─── Classe PAI ────────────────────────────────────────
+class Entidade:
+    def __init__(self, nome, hp, forca):
+        self.nome = nome
+        self.hp = hp
+        self.forca = forca
 
-    jogador = {
-        "nome": nome,
-        "hp": 100,
-        "level": 1,
-        "forca": 3,
-        "exp": 0,
-        "inventario": [],
-        "vivo": True
-    }
+    def receber_dano(self, dano):
+        self.hp -= dano
+        if self.hp < 0:
+            self.hp = 0
 
+    def esta_vivo(self):
+        return self.hp > 0
+
+    def atacar(self, alvo):
+        atacante_sorte = random.randint(0, 6)
+        defensor_sorte = random.randint(0, 6)
+
+        if atacante_sorte == 6:
+            print(f"{self.nome} acertou um crítico!")
+        elif atacante_sorte > 0:
+            print(f"{self.nome} acertou!")
+        else:
+            print(f"{self.nome} errou!")
+
+        dano = self.forca * atacante_sorte - alvo.forca * defensor_sorte
+
+        if dano > 0:
+            alvo.receber_dano(dano)
+            print(f"{alvo.nome} sofreu {dano} de dano.")
+        else:
+            print(f"{alvo.nome} não sofreu dano.")
+
+
+# ─── Classe FILHA: Jogador ───────────────────────────
+class Jogador(Entidade):
+    def __init__(self, nome, hp, forca):
+        super().__init__(nome, hp, forca)  # inicializa a parte comum
+        self.level = 1
+        self.exp = 0
+        self.inventario = []
+
+    def usar_item(self):
+        if not self.inventario:
+            print("Seu inventário está vazio!")
+            return
+        print("Inventário:")
+        for index, item in enumerate(self.inventario):
+            print(f"{index + 1}. {item}")
+        opcao_item = int(input("Escolha o item (ou 0 para cancelar): "))
+        if opcao_item == 0:
+            return
+        item_escolhido = self.inventario[opcao_item - 1]
+        if item_escolhido == "Poção":
+            print("Você usou uma poção!")
+            self.hp += 20
+            if self.hp > 100:
+                self.hp = 100
+            print(f"Seu HP agora é {self.hp}")
+            self.inventario.pop(opcao_item - 1)
+        else:
+            print("Item inválido!")
+
+    def fugir(self):
+        import random
+
+        sucesso = random.choice([True, False])
+        if sucesso:
+            print(f"{self.nome} fugiu com sucesso!")
+            return True
+        else:
+            print(f"{self.nome} não conseguiu escapar!")
+            return False
+
+
+# ─── Classe FILHA: Monstro ──────────────────────────────
+class Monstro(Entidade):
+    def __init__(self, nome, hp, forca, exp):
+        super().__init__(nome, hp, forca)  # inicializa a parte comum
+        self.exp = exp
+
+
+# Função para iniciar um novo jogo
+def iniciar_novo_jogo():
+    nome = input("Qual o seu nome? ")
+    jogador = Jogador(nome, 100, 3)
     return jogador
 
-def escolher_raca():
-    print("Escolha a sua raça:")
-    for raca in racas:
-        print(
-            f"{racas[raca]['id']}. {raca} (HP: {racas[raca]['hp']}, Força: {racas[raca]['forca']}, Descrição: {racas[raca]['description']}, Especial: {racas[raca]['special']}, Fraqueza: {racas[raca]['weakness']})"
-        )
 
-    escolha = int(input("Digite o número da raça escolhida: "))
-    for raca in racas:
-        if racas[raca]["id"] == escolha:
-            return raca, racas[raca]["hp"], racas[raca]["forca"]
+# Função para sortear um monstro
+def sortear_monstro(jogador_lv):
+    monstros = [
+        {"nome": "slime", "hp": 10, "forca": 2, "exp": 10},
+        {"nome": "goblin", "hp": 20, "forca": 4, "exp": 20},
+        {"nome": "troll", "hp": 40, "forca": 8, "exp": 40},
+        {"nome": "orc", "hp": 80, "forca": 16, "exp": 80},
+        {"nome": "múmia", "hp": 160, "forca": 32, "exp": 160},
+        {"nome": "quimera", "hp": 320, "forca": 64, "exp": 320},
+        {"nome": "dragão", "hp": 1000, "forca": 100, "exp": 1000},
+    ]
 
-    print("Raça inválida. Escolhendo Humano por padrão.")
-    return "Humano", racas["Humano"]["hp"], racas["Humano"]["forca"]
-
-
-def sortear_monstro(jogador_lvl):
-    # Lista de monstros: [nome, hp, força, exp]
-    # slime = ["Slime", 10, 2, 10]
-    # goblin = ["Goblin", 20, 4, 20]
-    # troll = ["Troll", 40, 8, 40]
-    # orc = ["Orc", 80, 16, 80]
-    # mumia = ["Múmia", 160, 32, 160]
-    # quimera = ["Quimera", 320, 64, 320]
-    # dragao = ["Dragão", 1000, 100, 1000]
-
-    monstros = {
-        "slime": {
-            "monstro_nome": "slime",
-            "monstro_hp": 10,
-            "monstro_forca": 10,
-            "monstro_exp": 10,
-        },
-        "goblin": {
-            "monstro_nome": "Goblin",
-            "monstro_hp": 20,
-            "monstro_exp": 20,
-            "monstro_forca": 20,
-        },
-    }
-
-    # Retornando monstros de acordo com lvl do jogador
-    if jogador_lvl <= 5:
-        monstro_sorteado = random.choice([monstros["slime"], monstros["goblin"]])
-    elif jogador_lvl <= 15:
-        monstro_sorteado = random.choice(
-            [monstros["goblin"], monstros["troll"], monstros["orc"]]
-        )
+    if jogador_lv < 5:
+        escolhido = random.choice(monstros[0:3])
+    elif jogador_lv < 10:
+        escolhido = random.choice(monstros[2:6])
     else:
-        monstro_sorteado = random.choice(
-            [monstros["mumia"], monstros["quimera"], monstros["dragao"]]
-        )
+        escolhido = monstros[-1]
 
-    return monstro_sorteado
+    return Monstro(
+        escolhido["nome"], escolhido["hp"], escolhido["forca"], escolhido["exp"]
+    )
 
 
+# Função para exibir game over
 def game_over():
-    print("GAME OVER! Você morreu.")
-    print("Obrigado por jogar.")
-    exit(0)
+    print("O jogo acabou.")
+    print("Obrigado por jogar!")
+    exit(1)
 
 
-def atacar(atacante_nome, atacante_forca, defensor_nome, defensor_hp, defensor_forca):
-    atacante_sorte = random.randint(0, 6)
-    defensor_sorte = random.randint(0, 6)
+# Função para calcular o level up
+def calcular_level(jogador, exp_monstro):
+    jogador.exp = jogador.exp + exp_monstro
+    experiencia_necessaria = 3**jogador.level
 
-    dano = atacante_forca * atacante_sorte - defensor_forca * defensor_sorte
-    defensor_hp = defensor_hp - dano  # defensor_hp -= dano
-
-    if atacante_sorte == 6:
-        print(
-            f"{atacante_nome} acertou um ataque crítico! Dano de {dano}, HP do defensor agora é {defensor_hp}"
-        )
-    elif atacante_sorte > 0:
-        print(
-            f"{atacante_nome} acertou o alvo! Dano de {dano}, HP do defensor agora é {defensor_hp}"
-        )
-    else:
-        print(
-            f"{atacante_nome} errou o ataque! O defensor não sofreu dano, HP do defensor ainda é {defensor_hp}"
-        )
-
-    if defensor_hp <= 0:
-        print(f"{defensor_nome} foi derrotado!")
-        return True, defensor_hp
+    if jogador.exp > experiencia_necessaria:  # Subiu de level?
+        print("Level up!")
+        jogador.level += 1
+        jogador.hp = 100
+        jogador.forca = jogador.forca * 2
 
 
-# calcular o level up
-def calcular_lvl(jogador_lvl, jogador_exp, jogador_hp, jogador_forca, monstro_exp):
-    jogador_exp = jogador_exp + monstro_exp
-    exp_necessaria = jogador_lvl**3
-
-    if jogador_exp >= exp_necessaria:
-        jogador_lvl += 1
-        jogador_hp += 100
-        jogador_forca *= 2
-        print(
-            f"Parabéns! Você subiu de nível! Agora você é nível {jogador_lvl}, com {jogador_hp} de HP e {jogador_forca} de força."
-        )
-    return jogador_lvl, jogador_exp, jogador_hp, jogador_forca
-
-
+# Função para obter uma poção
 def obter_pocao():
     chance = random.random()
-    if chance <= 0.4:
-        print("Você encontrou uma poção de cura!")
-        return True
+    if chance <= 0.2:
+        print("Você ganhou uma poção!")
+        return "Poção"
     else:
         return None
 
 
-def usar_item(jogador_inventario, jogador_hp):
-    if not jogador_inventario:
-        print("Seu inventário está vazio.")
-    else:
-        print("Itens no inventário:")
-        for index, item in enumerate(jogador_inventario):
-            print(f"{index + 1}. {item}")
-        opcao_item = int(input("Escolha o item(ou 0 para cancelar): "))
-        if opcao_item == 0:
-            print("\nVocê cancelou o uso do item.")
-        else:
-            item_escolhido = jogador_inventario[opcao_item - 1]
-            if item_escolhido == "Poção":
-                print("Você usou uma poção!")
-                jogador_hp += 20
-                if jogador_hp > 100:
-                    jogador_hp = 100
-                    print(f"Seu HP agora é {jogador_hp}.\n")
-                    jogador_inventario.pop(opcao_item - 1)
-            else:
-                print("Item inválido.\n")
-
-
-def fugir(jogador_nome):
-    chance_fuga = random.random()
-    if chance_fuga <= 0.5:
-        print(f"{jogador_nome} conseguiu fugir do combate!")
-        return True
-    else:
-        print(f"{jogador_nome} não conseguiu fugir do combate!")
-        return False
-
-
-# jogo executa aqui
+# Função principal do jogo
 def main():
     mostrar_titulo()
-    jogador = iniciar_jogo()
+    jogador = iniciar_novo_jogo()
     print("\n")
 
-jogador_lutando = False
-while True:
-    if not jogador_lutando:  # Não estou enfrentando um monstro
-        monstro_nome, monstro_hp, monstro_forca, monstro_exp = sortear_monstro(
-            jogador["level"]
-        )
-        print(
-            f"Um {monstro_nome} aleatório apareceu!\n HP: {monstro_hp}\n Força: {monstro_forca}"
-        )
-        jogador_lutando = True
-    else:
-        print(f"Você está enfrentando um {monstro_nome}!\n HP: {monstro_hp}\n")
+    jogador_enfrentando_monstro = False
 
-        print(f"{jogador_nome} (HP: {jogador_hp}/100, Força: {jogador_forca})")
-        print(f"Level: {jogador_lvl}")
-        print(f"O que você deseja fazer?")
+    while True:
+        if not jogador_enfrentando_monstro:
+            monstro = sortear_monstro(jogador.level)
+
+            print(f"\nUm {monstro.nome} aleatório aparece!")
+            print(f"HP: {monstro.hp}\n")
+            jogador_enfrentando_monstro = True
+        else:
+            print(f"\nVocê está enfrentando um {monstro.nome}!")
+            print(f"HP: {monstro.hp}\n")
+
+        print(f"{jogador.nome}: {jogador.hp}/100")
+        print(f"Level: {jogador.level}")
+        print("O que você deseja fazer?")
         print("1. Atacar")
         print("2. Usar item")
         print("3. Fugir")
         print("4. Visualizar status")
         print("5. Sair do jogo")
-        opcao = int(input("Escolha uma opção: "))
+        opcao = int(input())
 
         if opcao == 1:
-            monstro_hp = atacar(
-                jogador_nome, jogador_forca, monstro_nome, monstro_hp, monstro_forca
-            )
             print("\n")
-
-            if monstro_hp > 0:
-                jogador_hp = atacar(
-                    monstro_nome, monstro_forca, jogador_nome, jogador_hp, jogador_forca
-                )
+            # Jogador ataca o monstro
+            jogador.atacar(monstro)
+            print("\n")
+            if monstro.esta_vivo():
+                # Monstro ataca o jogador
+                monstro.atacar(jogador)
                 print("\n")
-
-                if jogador_hp <= 0:
+                if not jogador.esta_vivo():
                     game_over()
             else:
-                print(f"Você ganhou {monstro_exp} de XP!")
-                jogador_lvl, jogador_exp, jogador_hp, jogador_forca = calcular_lvl(
-                    jogador_lvl, jogador_exp, jogador_hp, jogador_forca, monstro_exp
-                )
+                # Jogador ganhou experiência
+                print(f"Você ganhou {monstro.exp} XP!")
+                calcular_level(jogador, monstro.exp)
+                # Pode ganhar item
                 pocao = obter_pocao()
                 if pocao is not None:
-                    jogador_inventario.append(pocao)
-                jogador_lutando = False
+                    jogador.inventario.append(pocao)
+                jogador_enfrentando_monstro = False
+                continue
         elif opcao == 2:
-            jogador_hp, jogador_inventario = usar_item(jogador_inventario, jogador_hp)
+            jogador.usar_item()
+            continue
         elif opcao == 3:
-            fugiu = fugir(jogador_nome)
+            fugiu = jogador.fugir()
             if fugiu:
-                jogador_lutando = False
+                jogador_enfrentando_monstro = False
+                continue
             else:
-                jogador_hp = atacar(
-                    monstro_nome, monstro_forca, jogador_nome, jogador_hp, jogador_forca
-                )
+                # Monstro ataca o jogador
+                monstro.atacar(jogador)
                 print("\n")
-                if jogador_hp == 0:
+                if not jogador.esta_vivo():
                     game_over()
         elif opcao == 4:
-            print(f"\n{jogador_nome}")
-            print(f"\nHP: {jogador_hp}/100")
-            print(f"\nLVL: {jogador_lvl}")
-            print(f"\nEXP: {jogador_exp}")
-            exp_proximo_lvl = jogador_exp**3
-            print(f"\nVocê precisa de {exp_proximo_lvl} XP para subir de nível")
-            print(f"\nForça: {jogador_forca}")
-            print(f"\nInventário: {jogador_inventario}\n")
-
+            print(f"\n{jogador.nome}")
+            print(f"HP: {jogador.hp}/100")
+            print(f"LV: {jogador.level}")
+            print(f"EXP: {jogador.exp}")
+            exp_proximo_nivel = 3**jogador.level
+            print(f"Falta {exp_proximo_nivel - jogador.exp} XP para evoluir")
+            print(f"Força: {jogador.forca}")
+            print(f"Inventário: {jogador.inventario}\n")
+            continue
         elif opcao == 5:
             game_over()
+        else:
+            print("Opção inválida!\n")
+            continue
+
+
+if __name__ == "__main__":
+    main()
