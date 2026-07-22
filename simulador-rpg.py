@@ -54,21 +54,24 @@ racas = {
 
 def mostrar_titulo():
     print("===================================")
-    print("      SIMULADOR DE RPG EM TEXTO     ")
+    print("      SIMULADOR DE RPG EM TEXTO    ")
     print("===================================")
 
 
 def iniciar_jogo():
     nome = input("Digite o seu nome: ")
-    hp = 100
-    lvl = 1
-    forca = 3
-    exp = 0
-    inventario = []
-    status = True  # Vivo(True) ou morto(False)
 
-    return nome, hp, lvl, forca, exp, inventario, status
+    jogador = {
+        "nome": nome,
+        "hp": 100,
+        "level": 1,
+        "forca": 3,
+        "exp": 0,
+        "inventario": [],
+        "vivo": True
+    }
 
+    return jogador
 
 def escolher_raca():
     print("Escolha a sua raça:")
@@ -215,23 +218,16 @@ def fugir(jogador_nome):
 
 
 # jogo executa aqui
-mostrar_titulo()
-(
-    jogador_nome,
-    jogador_hp,
-    jogador_lvl,
-    jogador_forca,
-    jogador_exp,
-    jogador_inventario,
-    jogador_status,
-) = iniciar_jogo()
-print("\n")
+def main():
+    mostrar_titulo()
+    jogador = iniciar_jogo()
+    print("\n")
 
 jogador_lutando = False
 while True:
     if not jogador_lutando:  # Não estou enfrentando um monstro
         monstro_nome, monstro_hp, monstro_forca, monstro_exp = sortear_monstro(
-            jogador_lvl
+            jogador["level"]
         )
         print(
             f"Um {monstro_nome} aleatório apareceu!\n HP: {monstro_hp}\n Força: {monstro_forca}"
